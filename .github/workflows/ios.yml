@@ -2,19 +2,15 @@ name: Flutter iOS IPA Build
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -25,20 +21,18 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Create iOS project (if not exists) and install pods
+      - name: Prepare iOS Project
         run: |
           flutter create . --platforms=ios --project-name=manga_ai
           cd ios
           pod install
           cd ..
 
-      - name: Build iOS IPA
+      - name: Build IPA
         run: flutter build ipa --release
 
-      - name: Upload IPA artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MangaAI-IPA
           path: build/ios/ipa/*.ipa
-          if-no-files-found: error
-          retention-days: 5
